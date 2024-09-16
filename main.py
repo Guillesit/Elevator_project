@@ -21,6 +21,7 @@ level_of_prio=0
 margin=0.05
 waiting=0
 wait_threshold=5
+previous_pos=Elevator_pos
 
 def check_inbetween():
     if Current_target>Elevator_pos:
@@ -30,27 +31,51 @@ def check_inbetween():
                 return target
             else:
                 target+=1
-    return Elevator_pos
+        return Current_target
+    else:
+        target=np.floor(Elevator_pos)
+        for elem in np.flip(Requests[Floor_index(Current_target):np.floor(Floor_index(Elevator_pos))]):
+            if elem!=0:
+                return target
+            else:
+                target-=1
+        return Current_target
+    
+def check_all():
+    target=lowest_floor
+    for elem in Requests:
+        if elem!=0:
+            return target
+        else:
+            target+=1
+        return Elevator_pos
             
 
 def calculate_objective():
+    if level_of_prio==0:
+        return check_all
     if inside_objective!="none":
         return check_inbetween()
-    elif
+    elif abs(Current_target-Elevator_pos)<margin:
+
 
     return 
 
 def calculate_direction():
-    if abs(Current_target-Elevator_pos)<margin or waiting>wait_threshold/dt:
+    global level_of_prio
+    if abs(Current_target-Elevator_pos)<margin or waiting<wait_threshold/dt:
+        if previous_pos!=round(Elevator_pos):
+            waiting=0  
+            previous_pos=round(Elevator_pos)
         Requests[Floor_index(Elevator_pos)]=0
         waiting+=1
+        if waiting>=wait_threshold/dt:
+            level_of_prio=0
 
         return 0
     elif Current_target>Elevator_pos:
-        waiting=0
         return 1
     else:
-        waiting=0
         return -1
     
 
