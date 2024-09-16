@@ -13,8 +13,8 @@ def Floor_index(Floor_num):
  return Floor_num-lowest_floor
 
 i=0
-while(i<100)
+while(i<100):
 
- i++
+ i+=1
  sleep(10)
  
