@@ -7,13 +7,14 @@ Current_direction="up"
 Max_speed=0
 Requests=np.zeros(Numb_floors)
 
-
-
-function Floor_index(Floor_num):
+lowest_floor=0
+def Floor_index(Floor_num):
     
-return Floor_num+lowest_floor
+ return Floor_num-lowest_floor
 
+i=0
+while(i<100)
 
-
-
-Floor_index()
+ i++
+ sleep(10)
+ 
