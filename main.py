@@ -22,12 +22,13 @@ margin=0.05
 waiting=0
 wait_threshold=5
 previous_pos=Elevator_pos
+print(previous_pos)
 prev_direction=Current_direction
 
 def check_inbetween():
     if Current_target>Elevator_pos:
         target=np.ceil(Elevator_pos)
-        for elem in Requests[np.ceil(Floor_index(Elevator_pos)):Floor_index(Current_target)]:
+        for elem in Requests[int(np.ceil(Floor_index(Elevator_pos))):Floor_index(Current_target)]:
             if elem!=0:
                 return target
             else:
@@ -35,7 +36,7 @@ def check_inbetween():
         return Current_target
     else:
         target=np.floor(Elevator_pos)
-        for elem in np.flip(Requests[Floor_index(Current_target):np.floor(Floor_index(Elevator_pos))]):
+        for elem in np.flip(Requests[Floor_index(Current_target):int(np.floor(Floor_index(Elevator_pos)))]):
             if elem!=0:
                 return target
             else:
@@ -74,12 +75,12 @@ def check_all_up():
             return target
         else:
             target+=1
-        return Elevator_pos
+    return Elevator_pos
     
 def check_over():
     if Current_target>Elevator_pos:
         target=Numb_floors+lowest_floor
-        for elem in np.flip(Requests[np.ceil(Floor_index(Current_target)):]):
+        for elem in np.flip(Requests[int(np.ceil(Floor_index(Current_target))):]):
             if elem!=0:
                 return target
             else:
@@ -87,7 +88,7 @@ def check_over():
         return Current_target
     else:
         target=lowest_floor
-        for elem in Requests[:np.floor(Floor_index(Current_target))]:
+        for elem in Requests[:int(np.floor(Floor_index(Current_target)))]:
             if elem!=0:
                 return target
             else:
@@ -99,21 +100,23 @@ def calculate_objective():
     global Current_target
     if moving==0:
         if prev_direction==-1: 
-            Current_target=check_all_down
+            Current_target=check_all_down()
         else:
-            Current_target=check_all_up
+            Current_target=check_all_up()
     if inside_objective!="none":
         return check_inbetween()
     else:
-        return check_over
+        return check_over()
 
 def calculate_direction():
     global moving
     global inside_objective
     global prev_direction
     if abs(Current_target-Elevator_pos)<margin or waiting<wait_threshold/dt:
+        print(previous_pos)
         if previous_pos!=round(Elevator_pos):
-            waiting=0  
+            waiting=0
+            print(previous_pos)
             previous_pos=round(Elevator_pos)
         if Requests[Floor_index(Elevator_pos)]==2:
             inside_objective="none"
@@ -151,7 +154,7 @@ while(i<max_time/dt):
     Current_direction=calculate_direction()
     Elevator_pos+=Current_direction*Max_speed*dt
 
-    print(Elevator_pos)
+    print("Elevator_pos:\n",Elevator_pos)
 
     i+=1
     time.sleep(dt)
