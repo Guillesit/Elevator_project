@@ -22,7 +22,9 @@ inside_objective="none"
 moving=0
 margin=0.05
 waiting=0.0
+open_doors_button=0
 wait_threshold=1
+
 
 
 attempted_direction=1
@@ -324,9 +326,6 @@ def calculate_direction():
             attempted_direction=-1
             Requests[Floor_index(round(Elevator_pos)),0]=0
 
-
-
-    
         
 
     if abs(Current_target-Elevator_pos)<margin or waiting>0:
@@ -334,9 +333,13 @@ def calculate_direction():
         if moving:
             moving=0
             waiting=wait_threshold/dt
-            
+        
+        if open_doors_button:
+            open_doors_button=0
+            waiting=wait_threshold/dt
 
         Requests[Floor_index(round(Elevator_pos)),2]=0
+
         if waiting>0:
             waiting-=1
         
