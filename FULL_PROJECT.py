@@ -348,7 +348,7 @@ while(i<max_time/dt):
     if i==504:
         Requests[5,0]=1
     Current_target=calculate_objective()
-    print("i:",i,"a:",Current_target)
+    print("i:",i,"Curr_target:",Current_target)
     Current_direction=calculate_direction()
     Elevator_pos+=Current_direction*Max_speed*dt
 
