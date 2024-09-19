@@ -362,21 +362,22 @@ while(i<max_time/dt):
 
     if i==5:
         Requests[2,0]=1
-    if i==400:
-        Requests[4,0]=1
+    
     if i==202:
         Requests[1,2]=1
+    
+    if i==400:
+        Requests[4,0]=1
     if i==404:
         Requests[5,0]=1
     Current_target=calculate_objective()
-    print("i:",i,"    Curr_target:",Current_target)
+    
     Current_direction=calculate_direction()
     #print("Attempted_dir:",attempted_direction,"Curr_direction:",Current_direction,"waiting_time:",waiting)
     
     Elevator_pos+=Current_direction*Max_speed*dt
-
-    print("                            Elevator_pos:","{:.3f}".format(Elevator_pos))
-    print("                                                    Waiting_time:",waiting)
+    print("i:",i," Curr_target:",Current_target,"Elevator_pos:","{:.3f}".format(Elevator_pos),"Waiting_time:",waiting)
+    
     i+=1
     time.sleep(dt)
 
