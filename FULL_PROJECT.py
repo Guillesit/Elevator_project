@@ -6,7 +6,7 @@ Numb_floors=6
 Elevator_pos=0
 Current_target=0
 Current_direction=0 #0 stop, 1 up, -1 down
-Max_speed=1
+Max_speed=0.5
 lowest_floor=0
 Top_floor=Numb_floors-lowest_floor
 Requests=np.zeros((Numb_floors-lowest_floor+1,3))
@@ -303,7 +303,7 @@ def calculate_direction():
     global inside_objective
     global attempted_direction
     global next_direction
-
+    global open_doors_button
     global waiting
 
 
