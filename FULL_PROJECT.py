@@ -23,7 +23,7 @@ moving=0
 margin=0.05
 waiting=0.0
 wait_threshold=1
-previous_pos=Elevator_pos
+
 
 attempted_direction=1
 next_direction=0
@@ -301,7 +301,7 @@ def calculate_direction():
     global inside_objective
     global attempted_direction
     global next_direction
-    global previous_pos
+
     global waiting
 
 
@@ -325,11 +325,16 @@ def calculate_direction():
             Requests[Floor_index(round(Elevator_pos)),0]=0
 
 
+
+    
+        
+
     if abs(Current_target-Elevator_pos)<margin or waiting>0:
         
-        if previous_pos!=round(Elevator_pos):
+        if moving:
+            moving=0
             waiting=wait_threshold/dt
-            previous_pos=round(Elevator_pos)
+            
 
         Requests[Floor_index(round(Elevator_pos)),2]=0
         if waiting>0:
@@ -339,7 +344,7 @@ def calculate_direction():
 
         return 0
     else:
-        
+        moving=1
         return attempted_direction
     
 
