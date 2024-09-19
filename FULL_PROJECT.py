@@ -6,7 +6,7 @@ Numb_floors=6
 Elevator_pos=0
 Current_target=0
 Current_direction=0 #0 stop, 1 up, -1 down
-Max_speed=0.3
+Max_speed=1
 lowest_floor=0
 Top_floor=Numb_floors-lowest_floor
 Requests=np.zeros((Numb_floors-lowest_floor+1,3))
@@ -21,7 +21,7 @@ def index_to_floor(index):
 inside_objective="none"
 moving=0
 margin=0.05
-waiting=1000000
+waiting=0.0
 wait_threshold=1
 previous_pos=Elevator_pos
 
@@ -325,14 +325,15 @@ def calculate_direction():
             Requests[Floor_index(round(Elevator_pos)),0]=0
 
 
-    if abs(Current_target-Elevator_pos)<margin or waiting<wait_threshold/dt:
+    if abs(Current_target-Elevator_pos)<margin or waiting>0:
         
         if previous_pos!=round(Elevator_pos):
-            waiting=0
+            waiting=wait_threshold/dt
             previous_pos=round(Elevator_pos)
 
         Requests[Floor_index(round(Elevator_pos)),2]=0
-        waiting+=1
+        if waiting>0:
+            waiting-=1
         
         #moving=0
 
@@ -347,7 +348,8 @@ i=0
 
 dt=0.02
 
-max_time=12
+max_time=20
+
 while(i<max_time/dt):
 
     if i==5:
@@ -359,13 +361,14 @@ while(i<max_time/dt):
     if i==404:
         Requests[5,0]=1
     Current_target=calculate_objective()
-    print("i:",i,"Curr_target:",Current_target)
+    print("i:",i,"    Curr_target:",Current_target)
     Current_direction=calculate_direction()
-    print("Attempted_dir:",attempted_direction,"Curr_direction:",Current_direction,"waiting_time:",waiting)
+    #print("Attempted_dir:",attempted_direction,"Curr_direction:",Current_direction,"waiting_time:",waiting)
+    
     Elevator_pos+=Current_direction*Max_speed*dt
 
-    print("Elevator_pos:",Elevator_pos)
-
+    print("                            Elevator_pos:","{:.3f}".format(Elevator_pos))
+    print("                                                    Waiting_time:",waiting)
     i+=1
     time.sleep(dt)
 
