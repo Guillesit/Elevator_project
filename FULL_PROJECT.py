@@ -9,7 +9,7 @@ Current_direction=0 #0 stop, 1 up, -1 down
 Max_speed=0.3
 lowest_floor=0
 Top_floor=Numb_floors-lowest_floor
-Requests=np.zeros((Numb_floors-lowest_floor,3))
+Requests=np.zeros((Numb_floors-lowest_floor+1,3))
 
 
 def Floor_index(Floor_num):
@@ -21,10 +21,10 @@ def index_to_floor(index):
 inside_objective="none"
 moving=0
 margin=0.05
-waiting=0
-wait_threshold=5
+waiting=1000000
+wait_threshold=1
 previous_pos=Elevator_pos
-print(previous_pos)
+
 attempted_direction=1
 next_direction=0
 
@@ -105,7 +105,7 @@ def calculate_objective():
     global next_direction 
     global Current_target
     
-    if attempted_direction==1 and Current_direction==0:
+    if (attempted_direction==1 and Current_direction==0):
         target=int(round(Elevator_pos))+1 #1! y 3
         for elem in Requests[Floor_index((round(Elevator_pos))+1):,2]:
             if elem!=0:
@@ -119,11 +119,13 @@ def calculate_objective():
                 target+=1
 
         target=int(round(Elevator_pos))-1 #2! y 6
-        for elem in np.flip(Requests[:Floor_index(round((Elevator_pos))-1),2]):
+        for elem in np.flip(Requests[:Floor_index(round((Elevator_pos))-1)+1,2]):
             if elem!=0:
+                
                 target=int(round(Elevator_pos))-1
-                for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1),2]+Requests[:Floor_index((round(Elevator_pos))-1),0]):
+                for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1)+1,2]+Requests[:Floor_index((round(Elevator_pos))-1)+1,0]):
                     if elem!=0:
+                        
                         return target
                 else:
                     target-=1
@@ -144,6 +146,7 @@ def calculate_objective():
         for elem in np.flip(Requests[:,0]):
             if elem!=0:
                 next_direction=-1
+                
                 return target
             else:
                 target-=1
@@ -151,7 +154,7 @@ def calculate_objective():
 
         
         target=lowest_floor # 4
-        for elem in Requests[:Floor_index((round(Elevator_pos))-1),1]:
+        for elem in Requests[:Floor_index((round(Elevator_pos))-1)+1,1]:
             if elem!=0:
                 next_direction=1
                 return target
@@ -163,11 +166,12 @@ def calculate_objective():
     elif Current_direction==0:
 
         target=int(round(Elevator_pos))-1 #2! y 6
-        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1),2]):
+        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1)+1,2]):
             if elem!=0:
                 target=int(round(Elevator_pos))-1
-                for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1),2]+Requests[:Floor_index((round(Elevator_pos))-1),0]):
+                for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1)+1,2]+Requests[:Floor_index((round(Elevator_pos))-1)+1,0]):
                     if elem!=0:
+                        
                         return target
                 else:
                     target-=1
@@ -180,6 +184,7 @@ def calculate_objective():
                 target=int(round(Elevator_pos))+1
                 for elem in Requests[Floor_index((round(Elevator_pos))+1):,2]+Requests[Floor_index((round(Elevator_pos))+1):,1]:
                     if elem!=0:
+                        
                         return target
                 else:
                     target+=1
@@ -187,34 +192,40 @@ def calculate_objective():
                 target+=1
         
         target=(round(Elevator_pos))-1 # 6
-        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1),0]):
+        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))-1)+1,0]):
             if elem!=0:
                 next_direction=-1
+                
                 return target
             else:
                 target-=1
         
-        target=Top_floor #3 y 4
+        target=lowest_floor #3 y 4
         for elem in Requests[:,1]:
             if elem!=0:
                 next_direction=1
+                
                 return target
             else:
                 target+=1
 
 
-        target=int(round(Elevator_pos))-1 #5
-        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))+1),0]):
+        target=Top_floor #5
+        for elem in np.flip(Requests[Floor_index((round(Elevator_pos))+1):,0]):
             if elem!=0:
                 next_direction=-1
+                
+                
                 return target
             else:
                 target-=1
+        
+        return Current_target
     
     elif Current_direction==1:
 
-        target=int(round(Elevator_pos)) #1 y 3
-        for elem in Requests[Floor_index((round(Elevator_pos))):,2]:
+        target=int(np.ceil(Elevator_pos)) #1 y 3
+        for elem in Requests[Floor_index((np.ceil(Elevator_pos))):,2]:
             if elem!=0:
                 
                 return target     
@@ -222,16 +233,16 @@ def calculate_objective():
                 target+=1
 
         
-        target=int(round(Elevator_pos)) #5
-        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))),0]):
+        target=Top_floor #5
+        for elem in np.flip(Requests[Floor_index(np.ceil(Elevator_pos)):,0]):
             if elem!=0:
                 next_direction=-1
                 return target
             else:
                 target-=1
 
-        target=int(round(Elevator_pos)) #2 y 6
-        for elem in np.flip(Requests[:Floor_index(round(Elevator_pos)),2]):
+        target=int(np.floor(Elevator_pos)) #2 y 6
+        for elem in np.flip(Requests[:Floor_index(np.floor(Elevator_pos))+1,2]):
             if elem!=0:
                 
                 return target
@@ -239,7 +250,7 @@ def calculate_objective():
                 target-=1
 
         target=lowest_floor # 4
-        for elem in Requests[:Floor_index((round(Elevator_pos))-1),1]:
+        for elem in Requests[:Floor_index((np.floor(Elevator_pos)))+1,1]:
             if elem!=0:
                 next_direction=1
                 return target
@@ -248,8 +259,8 @@ def calculate_objective():
 
         return Current_target
     else:
-        target=int(round(Elevator_pos)) #2 y 6
-        for elem in np.flip(Requests[:Floor_index(round(Elevator_pos)),2]):
+        target=int(np.floor(Elevator_pos)) #2 y 6
+        for elem in np.flip(Requests[:Floor_index(np.floor(Elevator_pos))+1,2]):
             if elem!=0:
                 
                 return target
@@ -257,23 +268,23 @@ def calculate_objective():
                 target-=1
 
         target=lowest_floor # 4
-        for elem in Requests[:Floor_index((round(Elevator_pos))),1]:
+        for elem in Requests[:Floor_index((np.floor(Elevator_pos)))+1,1]:
             if elem!=0:
                 next_direction=1
                 return target
             else:
                 target+=1
 
-        target=int(round(Elevator_pos)) #1 y 3
-        for elem in Requests[Floor_index((round(Elevator_pos))):,2]:
+        target=int(np.ceil(Elevator_pos)) #1 y 3
+        for elem in Requests[Floor_index((np.ceil(Elevator_pos))):,2]:
             if elem!=0:
                 
                 return target     
             else:
                 target+=1
 
-        target=int(round(Elevator_pos)) #5
-        for elem in np.flip(Requests[:Floor_index((round(Elevator_pos))),0]):
+        target=Top_floor #5
+        for elem in np.flip(Requests[Floor_index((np.ceil(Elevator_pos))):,0]):
             if elem!=0:
                 next_direction=-1
                 return target
@@ -336,20 +347,21 @@ i=0
 
 dt=0.02
 
-max_time=20
+max_time=12
 while(i<max_time/dt):
 
-    if i==300:
+    if i==5:
         Requests[2,0]=1
-    if i==500:
+    if i==400:
         Requests[4,0]=1
-    if i==502:
+    if i==202:
         Requests[1,2]=1
-    if i==504:
+    if i==404:
         Requests[5,0]=1
     Current_target=calculate_objective()
     print("i:",i,"Curr_target:",Current_target)
     Current_direction=calculate_direction()
+    print("Attempted_dir:",attempted_direction,"Curr_direction:",Current_direction,"waiting_time:",waiting)
     Elevator_pos+=Current_direction*Max_speed*dt
 
     print("Elevator_pos:",Elevator_pos)
@@ -357,4 +369,4 @@ while(i<max_time/dt):
     i+=1
     time.sleep(dt)
 
- 
+print(Requests)
