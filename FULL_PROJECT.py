@@ -1,6 +1,54 @@
 import numpy as np
 import time
-import math
+import tkinter as tk
+import time
+
+
+
+
+root = tk.Tk()
+root.title("Button Grid")
+
+# Initialize an empty list to store the buttons
+buttons = []
+
+# Create 7 rows and 3 columns of buttons
+for row in range(7):
+    row_buttons = []  # List to store buttons in the current row
+    for col in range(3):
+        btn = tk.Button(root, text=f'Button {row * 3 + col + 1}', width=10)
+        btn.grid(row=row, column=col, padx=5, pady=5)
+        row_buttons.append(btn)  # Add the button to the row list
+    buttons.append(row_buttons)  # Add the row list to the main buttons list
+
+# Create an extra button below the grid, spanning all three columns
+extra_button = tk.Button(root, text='Extra Button', width=32)
+extra_button.grid(row=7, column=0, columnspan=3, padx=5, pady=10)
+
+def toggle_button(row,column):
+    global Requests
+    Requests[row,column] = int(not Requests[row,column])  # Toggle the state
+    update_button_appearance(row,column)
+    #print(f"Button is now {'pressed' if button_pressed else 'unpressed'}.")
+    '''
+    if button_pressed:
+        button_pressed_time = time.time()  # Record the time when the button was pressed
+    else:
+        button_pressed_time = None         # Reset the time
+    '''
+
+def update_button_appearance(row,column):
+    if button_pressed:
+        buttons[row,column].config(relief="sunken", text="Pressed", bg="lightblue")
+    else:
+        buttons[row,column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
+
+def unpress_button():
+    global button_pressed, button_pressed_time
+    button_pressed = False
+    button_pressed_time = None
+    update_button_appearance()
+    print("Button has been unpressed by the program.")
 
 Numb_floors=6
 Elevator_pos=0
