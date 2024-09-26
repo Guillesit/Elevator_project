@@ -5,8 +5,6 @@ import time
 button_pressed = False          # Tracks if the button is pressed
 button_pressed_time = None      # Records the time when the button was pressed
 
-start_time = time.time()
-timeout = 10  # seconds
 
 def toggle_button():
     global button_pressed, button_pressed_time
@@ -44,11 +42,6 @@ def main_program():
             unpress_button()
     
 
-    elapsed_total_time = time.time() - start_time
-    if elapsed_total_time > timeout:
-        print("Timeout reached. Stopping the program.")
-        break
-    
     # Schedule the next call to main_program after 1000 milliseconds
     root.after(1000, main_program)
 
