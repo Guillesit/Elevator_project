@@ -9,21 +9,35 @@ import time
 root = tk.Tk()
 root.title("Button Grid")
 
-# Initialize an empty list to store the buttons
-buttons = []
 
-# Create 7 rows and 3 columns of buttons
-for row in range(7):
-    row_buttons = []  # List to store buttons in the current row
-    for col in range(3):
-        btn = tk.Button(root, text=f'Button {row * 3 + col + 1}', width=10)
-        btn.grid(row=row, column=col, padx=5, pady=5)
-        row_buttons.append(btn)  # Add the button to the row list
-    buttons.append(row_buttons)  # Add the row list to the main buttons list
+Numb_floors=6
+Elevator_pos=0
+Current_target=0
+Current_direction=0 #0 stop, 1 up, -1 down
+Max_speed=0.5
+lowest_floor=0
+Top_floor=Numb_floors-lowest_floor
+Requests=np.zeros((Numb_floors-lowest_floor+1,3))
 
-# Create an extra button below the grid, spanning all three columns
-extra_button = tk.Button(root, text='Extra Button', width=32)
-extra_button.grid(row=7, column=0, columnspan=3, padx=5, pady=10)
+
+def Floor_index(Floor_num):
+    
+    return int(round(Floor_num-lowest_floor))
+def index_to_floor(index):
+    return int(index+lowest_floor)
+
+inside_objective="none"
+moving=0
+margin=0.05
+waiting=0.0
+open_doors_toggle=0
+wait_threshold=1
+
+
+
+attempted_direction=1
+next_direction=0
+
 
 def toggle_button(row,column):
     global Requests
@@ -40,9 +54,9 @@ def toggle_button(row,column):
 def update_button_appearance(row,column):
     global buttons
     if Requests[row,column]:
-        buttons[row,column].config(relief="sunken", text="Pressed", bg="lightblue")
+        buttons[3*(row-1)+column].config(relief="sunken", text="Pressed", bg="lightblue")
     else:
-        buttons[row,column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
+        buttons[3*(row-1)+column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
 
 def unpress_button(row,column):
     global Requests
@@ -76,33 +90,21 @@ def unpress_button_alt(togglable,button):
     update_button_appearance(togglable,button)
     print("Button has been unpressed by the program.")
 
-Numb_floors=6
-Elevator_pos=0
-Current_target=0
-Current_direction=0 #0 stop, 1 up, -1 down
-Max_speed=0.5
-lowest_floor=0
-Top_floor=Numb_floors-lowest_floor
-Requests=np.zeros((Numb_floors-lowest_floor+1,3))
+# Initialize an empty list to store the buttons
+buttons = []
 
+# Create 7 rows and 3 columns of buttons
+for row in range(7):
+    row_buttons = []  # List to store buttons in the current row
+    for col in range(3):
+        btn = tk.Button(root, text=f'Button {row * 3 + col + 1}', width=10, command=toggle_button(row,col))
+        btn.grid(row=row, column=col, padx=5, pady=5)
+        row_buttons.append(btn)  # Add the button to the row list
+    buttons.append(row_buttons)  # Add the row list to the main buttons list
 
-def Floor_index(Floor_num):
-    
-    return int(round(Floor_num-lowest_floor))
-def index_to_floor(index):
-    return int(index+lowest_floor)
-
-inside_objective="none"
-moving=0
-margin=0.05
-waiting=0.0
-open_doors_toggle=0
-wait_threshold=1
-
-
-
-attempted_direction=1
-next_direction=0
+# Create an extra button below the grid, spanning all three columns
+extra_button = tk.Button(root, text='Extra Button', width=32,command=toggle_button_alt(open_doors_toggle,extra_button))
+extra_button.grid(row=7, column=0, columnspan=3, padx=5, pady=10)
 
 '''
 
@@ -431,6 +433,9 @@ i=0
 dt=0.02
 
 max_time=20
+
+
+root.mainloop()
 
 while(i<max_time/dt):
 
