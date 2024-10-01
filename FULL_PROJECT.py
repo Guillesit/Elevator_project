@@ -38,16 +38,42 @@ def toggle_button(row,column):
     '''
 
 def update_button_appearance(row,column):
-    if button_pressed:
+    global buttons
+    if Requests[row,column]:
         buttons[row,column].config(relief="sunken", text="Pressed", bg="lightblue")
     else:
         buttons[row,column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
 
-def unpress_button():
-    global button_pressed, button_pressed_time
-    button_pressed = False
-    button_pressed_time = None
-    update_button_appearance()
+def unpress_button(row,column):
+    global Requests
+    global buttons
+    #global button_pressed, button_pressed_time
+    Requests[row,column]=0
+    update_button_appearance(row,column)
+    print("Button has been unpressed by the program.")
+
+def toggle_button_alt(togglable,button):
+    
+    togglable = int(not togglable)  # Toggle the state
+    update_button_appearance_alt(togglable,button)
+    #print(f"Button is now {'pressed' if button_pressed else 'unpressed'}.")
+    '''
+    if button_pressed:
+        button_pressed_time = time.time()  # Record the time when the button was pressed
+    else:
+        button_pressed_time = None         # Reset the time
+    '''
+
+def update_button_appearance_alt(togglable,button):
+    if togglable:
+        button.config(relief="sunken", text="Pressed", bg="lightblue")
+    else:
+        button.config(relief="raised", text="Unpressed", bg="SystemButtonFace")
+
+def unpress_button_alt(togglable,button):
+    #global button_pressed, button_pressed_time
+    togglable=0
+    update_button_appearance(togglable,button)
     print("Button has been unpressed by the program.")
 
 Numb_floors=6
@@ -70,7 +96,7 @@ inside_objective="none"
 moving=0
 margin=0.05
 waiting=0.0
-open_doors_button=0
+open_doors_toggle=0
 wait_threshold=1
 
 
@@ -351,7 +377,7 @@ def calculate_direction():
     global inside_objective
     global attempted_direction
     global next_direction
-    global open_doors_button
+    global open_doors_toggle
     global waiting
 
 
@@ -382,8 +408,8 @@ def calculate_direction():
             moving=0
             waiting=wait_threshold/dt
         
-        if open_doors_button:
-            open_doors_button=0
+        if open_doors_toggle:
+            open_doors_toggle=0
             waiting=wait_threshold/dt
 
         Requests[Floor_index(round(Elevator_pos)),2]=0
