@@ -7,17 +7,17 @@ import time
 
 
 root = tk.Tk()
-root.title("Button Grid")
+root.title("Elevator")
 
 
-Numb_floors=6
+Numb_floors=7
 Elevator_pos=0
 Current_target=0
 Current_direction=0 #0 stop, 1 up, -1 down
 Max_speed=0.5
 lowest_floor=0
-Top_floor=Numb_floors-lowest_floor
-Requests=np.zeros((Numb_floors-lowest_floor+1,3))
+Top_floor=Numb_floors-lowest_floor-1
+Requests=np.zeros((Numb_floors,3))
 
 
 def Floor_index(Floor_num):
@@ -30,7 +30,7 @@ inside_objective="none"
 moving=0
 margin=0.05
 waiting=0.0
-open_doors_toggle=0
+open_doors_toggle=[0]
 wait_threshold=1
 
 
@@ -53,10 +53,11 @@ def toggle_button(row,column):
 
 def update_button_appearance(row,column):
     global buttons
+    
     if Requests[row,column]:
-        buttons[3*(row-1)+column].config(relief="sunken", text="Pressed", bg="lightblue")
+        buttons[row][column].config(relief="sunken", text="Pressed", bg="lightblue")
     else:
-        buttons[3*(row-1)+column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
+        buttons[row][column].config(relief="raised", text="Unpressed", bg="SystemButtonFace")
 
 def unpress_button(row,column):
     global Requests
@@ -68,7 +69,7 @@ def unpress_button(row,column):
 
 def toggle_button_alt(togglable,button):
     
-    togglable = int(not togglable)  # Toggle the state
+    togglable[0] = int(not togglable[0])  # Toggle the state
     update_button_appearance_alt(togglable,button)
     #print(f"Button is now {'pressed' if button_pressed else 'unpressed'}.")
     '''
@@ -79,106 +80,44 @@ def toggle_button_alt(togglable,button):
     '''
 
 def update_button_appearance_alt(togglable,button):
-    if togglable:
+    if togglable[0]:
         button.config(relief="sunken", text="Pressed", bg="lightblue")
     else:
         button.config(relief="raised", text="Unpressed", bg="SystemButtonFace")
 
 def unpress_button_alt(togglable,button):
     #global button_pressed, button_pressed_time
-    togglable=0
+    togglable[0]=0
     update_button_appearance(togglable,button)
     print("Button has been unpressed by the program.")
 
 # Initialize an empty list to store the buttons
-buttons = []
+buttons = []#np.zeros(7*3)
 
 # Create 7 rows and 3 columns of buttons
-for row in range(7):
+for row in range(Numb_floors):
     row_buttons = []  # List to store buttons in the current row
     for col in range(3):
-        btn = tk.Button(root, text=f'Button {row * 3 + col + 1}', width=10, command=toggle_button(row,col))
+        btn = tk.Button(root, text=f'Button {row * 3 + col + 1}', width=10)
         btn.grid(row=row, column=col, padx=5, pady=5)
+        
         row_buttons.append(btn)  # Add the button to the row list
     buttons.append(row_buttons)  # Add the row list to the main buttons list
 
+for row2 in range(Numb_floors):
+    for col2 in range(3):
+        buttons[row2][col2].config(command=lambda colu=col2, rows=row2: toggle_button(rows,colu))
+        pass
+
+def do_nothing():
+    pass
+
 # Create an extra button below the grid, spanning all three columns
-extra_button = tk.Button(root, text='Extra Button', width=32,command=toggle_button_alt(open_doors_toggle,extra_button))
-extra_button.grid(row=7, column=0, columnspan=3, padx=5, pady=10)
+extra_button = tk.Button(root, text='Extra Button', width=32, relief=tk.RAISED)
+extra_button.config(command=lambda: toggle_button_alt(open_doors_toggle,extra_button))
+extra_button.grid(row=Numb_floors, column=0, columnspan=3, padx=5, pady=10)
 
-'''
 
-def check_inbetween():
-    if Current_target>Elevator_pos:
-        target=np.ceil(Elevator_pos)
-        for elem in Requests[Floor_index(np.ceil(Elevator_pos)):Floor_index(Current_target)]:
-            if elem!=0:
-                return target
-            else:
-                target+=1
-        return Current_target
-    else:
-        target=np.floor(Elevator_pos)
-        for elem in np.flip(Requests[Floor_index(Current_target):Floor_index(np.floor(Elevator_pos))]):
-            if elem!=0:
-                return target
-            else:
-                target-=1
-        return Current_target
-    
-def check_all_down():
-    global inside_objective
-    target=lowest_floor
-    for elem in Requests:
-        if elem==2:
-            inside_objective=target
-            return target
-        else:
-            target+=1
-    target=lowest_floor
-    for elem in Requests:
-        if elem!=0:
-            return target
-        else:
-            target+=1
-    return Elevator_pos
-    
-def check_all_up():
-    global inside_objective
-    target=Numb_floors+lowest_floor
-    for elem in np.flip(Requests):
-        if elem==2:
-            inside_objective=target
-            return target
-        else:
-            target+=1
-    target=Numb_floors+lowest_floor
-    for elem in np.flip(Requests):
-        if elem!=0:
-            return target
-        else:
-            target+=1
-    return Elevator_pos
-    
-def check_over():
-    if Current_target>Elevator_pos:
-        target=Numb_floors+lowest_floor
-        for elem in np.flip(Requests[Floor_index(np.ceil(Current_target)):]):
-            if elem!=0:
-                return target
-            else:
-                target-=1
-        return Current_target
-    else:
-        target=lowest_floor
-        for elem in Requests[:Floor_index(np.floor(Current_target))]:
-            if elem!=0:
-                return target
-            else:
-                target+=1
-        return Current_target
-            
-'''
 def calculate_objective():
     global next_direction 
     global Current_target
@@ -410,8 +349,9 @@ def calculate_direction():
             moving=0
             waiting=wait_threshold/dt
         
-        if open_doors_toggle:
-            open_doors_toggle=0
+        if open_doors_toggle[0]:
+            open_doors_toggle[0]=0
+            unpress_button_alt(open_doors_toggle,extra_button)
             waiting=wait_threshold/dt
 
         Requests[Floor_index(round(Elevator_pos)),2]=0
@@ -432,7 +372,7 @@ i=0
 
 dt=0.02
 
-max_time=20
+max_time=5
 
 
 root.mainloop()
