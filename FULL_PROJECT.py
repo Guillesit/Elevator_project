@@ -102,7 +102,7 @@ def update_button_appearance_alt(togglable,button):
 def unpress_button_alt(togglable,button):
     #global button_pressed, button_pressed_time
     togglable[0]=0
-    update_button_appearance(togglable,button)
+    update_button_appearance_alt(togglable,button)
     print("Button has been unpressed by the program.")
 
 # Initialize an empty list to store the buttons
@@ -266,7 +266,7 @@ def calculate_objective():
     elif Current_direction==1:
 
         target=int(np.ceil(Elevator_pos)) #1 y 3
-        for elem in Requests[floor_to_index((np.ceil(Elevator_pos))):,2]:
+        for elem in Requests[floor_to_index((np.ceil(Elevator_pos))):,2]+Requests[floor_to_index((np.ceil(Elevator_pos))):,1]:
             if elem!=0:
                 
                 return target     
@@ -283,7 +283,7 @@ def calculate_objective():
                 target-=1
 
         target=int(np.floor(Elevator_pos)) #2 y 6
-        for elem in np.flip(Requests[:floor_to_index(np.floor(Elevator_pos))+1,2]):
+        for elem in np.flip(Requests[:floor_to_index(np.floor(Elevator_pos))+1,2]+Requests[:floor_to_index(np.floor(Elevator_pos))+1,0]):
             if elem!=0:
                 
                 return target
@@ -301,7 +301,7 @@ def calculate_objective():
         return Current_target
     else:
         target=int(np.floor(Elevator_pos)) #2 y 6
-        for elem in np.flip(Requests[:floor_to_index(np.floor(Elevator_pos))+1,2]):
+        for elem in np.flip(Requests[:floor_to_index(np.floor(Elevator_pos))+1,2]+Requests[:floor_to_index(np.floor(Elevator_pos))+1,0]):
             if elem!=0:
                 
                 return target
@@ -317,7 +317,7 @@ def calculate_objective():
                 target+=1
 
         target=int(np.ceil(Elevator_pos)) #1 y 3
-        for elem in Requests[floor_to_index((np.ceil(Elevator_pos))):,2]:
+        for elem in Requests[floor_to_index((np.ceil(Elevator_pos))):,2]+Requests[floor_to_index((np.ceil(Elevator_pos))):,1]:
             if elem!=0:
                 
                 return target     
