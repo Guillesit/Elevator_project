@@ -1,7 +1,7 @@
 import numpy as np
-import time
 import tkinter as tk
 import time
+from PIL import Image, ImageTk
 
 
 #Index for Request, row for buttons, floor for everything else
