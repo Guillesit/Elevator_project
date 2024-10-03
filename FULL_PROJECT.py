@@ -361,13 +361,13 @@ def calculate_direction():
     if abs(Current_target-Elevator_pos)>=margin:
         if Current_target>Elevator_pos:
             attempted_direction=1
-            Requests[floor_to_index(round(Elevator_pos)),1]=0
-            update_button_appearance(floor_to_row(round(Elevator_pos)),1)
+            #Requests[floor_to_index(round(Elevator_pos)),1]=0
+            #update_button_appearance(floor_to_row(round(Elevator_pos)),1)
 
         else:
             attempted_direction=-1
-            Requests[floor_to_index(round(Elevator_pos)),0]=0
-            update_button_appearance(floor_to_row(round(Elevator_pos)),0)
+            #Requests[floor_to_index(round(Elevator_pos)),0]=0
+            #update_button_appearance(floor_to_row(round(Elevator_pos)),0)
 
         
 
@@ -380,7 +380,8 @@ def calculate_direction():
         if open_doors_toggle[0]:
             open_doors_toggle[0]=0
             unpress_button_alt(open_doors_toggle,extra_button)
-            waiting=wait_threshold/dt
+            if not moving:
+                waiting=wait_threshold/dt
 
         Requests[floor_to_index(round(Elevator_pos)),2]=0
         update_button_appearance(floor_to_row(round(Elevator_pos)),2)
